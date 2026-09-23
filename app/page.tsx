@@ -46,8 +46,8 @@ export default function RegistrationForm() {
             <Image
               src="/woodlands-wolves-logo.png"
               alt="Woodlands Wolves"
-              width={1021}
-              height={546}
+              width={3243}
+              height={1627}
               className="mx-auto h-auto w-full max-w-xs rounded-lg bg-black"
               priority
             />
@@ -70,8 +70,8 @@ export default function RegistrationForm() {
           <Image
             src="/woodlands-wolves-logo.png"
             alt="Woodlands Wolves"
-            width={1021}
-            height={546}
+            width={3243}
+            height={1627}
             className="mx-auto mb-4 h-auto w-full max-w-sm rounded-lg bg-black"
             priority
           />
