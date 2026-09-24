@@ -8,15 +8,26 @@ function getSupabase() {
   return createClient(url, key)
 }
 
+const ALLOWED_CHILD_GENDERS = ['Male', 'Female', 'Prefer not to say']
+
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const child_full_name = String(body.child_full_name ?? '').trim()
   const age = String(body.age ?? '').trim()
+  const child_gender = String(body.child_gender ?? '').trim()
   const parent_name = String(body.parent_name ?? '').trim()
   const phone = String(body.phone ?? '').trim()
   const email = String(body.email ?? '').trim()
 
-  if (!child_full_name || !age || !parent_name || !phone || !email) {
+  if (
+    !child_full_name ||
+    !age ||
+    !child_gender ||
+    !parent_name ||
+    !phone ||
+    !email ||
+    !ALLOWED_CHILD_GENDERS.includes(child_gender)
+  ) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
@@ -27,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabase
     .from('woodlands_wolves_have_a_go_registrations')
-    .insert({ child_full_name, age, parent_name, phone, email })
+    .insert({ child_full_name, age, child_gender, parent_name, phone, email })
 
   if (error) {
     console.error(error)

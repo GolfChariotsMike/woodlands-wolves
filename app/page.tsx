@@ -3,9 +3,12 @@
 import { useState } from 'react'
 import Image from 'next/image'
 
+const CHILD_GENDERS = ['Male', 'Female', 'Prefer not to say'] as const
+
 const emptyForm = {
   child_full_name: '',
   age: '',
+  child_gender: '',
   parent_name: '',
   phone: '',
   email: '',
@@ -16,7 +19,7 @@ export default function RegistrationForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
@@ -103,6 +106,15 @@ export default function RegistrationForm() {
             inputMode="numeric"
             autoComplete="off"
           />
+          <SelectField
+            label="Child's gender"
+            name="child_gender"
+            required
+            value={form.child_gender}
+            onChange={handleChange}
+            options={CHILD_GENDERS}
+            placeholder="Select gender"
+          />
           <Field
             label="Parent name"
             name="parent_name"
@@ -166,7 +178,7 @@ function Field({
   type: string
   required?: boolean
   value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
   placeholder?: string
   autoComplete?: string
   inputMode?: 'numeric' | 'text' | 'tel' | 'email'
@@ -189,6 +201,50 @@ function Field({
         style={{ borderColor: '#b9c8e8' }}
         placeholder={placeholder}
       />
+    </div>
+  )
+}
+
+function SelectField({
+  label,
+  name,
+  required,
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  label: string
+  name: string
+  required?: boolean
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  options: readonly string[]
+  placeholder: string
+}) {
+  return (
+    <div>
+      <label htmlFor={name} className="block text-sm font-bold mb-1 uppercase tracking-wide" style={{ color: '#0033A0' }}>
+        {label} {required && <span className="text-red-700">*</span>}
+      </label>
+      <select
+        id={name}
+        name={name}
+        required={required}
+        value={value}
+        onChange={onChange}
+        className="w-full rounded-lg px-4 py-2.5 focus:outline-none border-2 bg-white text-gray-900"
+        style={{ borderColor: '#b9c8e8' }}
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
     </div>
   )
 }

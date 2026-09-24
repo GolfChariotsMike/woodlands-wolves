@@ -16,7 +16,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('woodlands_wolves_have_a_go_registrations')
-    .select('id, child_full_name, age, parent_name, phone, email, created_at')
+    .select('id, child_full_name, age, child_gender, parent_name, phone, email, created_at')
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: 'Database error' }, { status: 500 })

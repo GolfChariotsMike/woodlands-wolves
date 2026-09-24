@@ -6,6 +6,7 @@ type Registration = {
   id: string
   child_full_name: string
   age: string
+  child_gender: string | null
   parent_name: string
   phone: string
   email: string
@@ -39,10 +40,11 @@ export default function AdminPage() {
   }
 
   const exportCSV = () => {
-    const headers = ['Child full name', 'Age', 'Parent name', 'Phone', 'Email', 'Registered at']
+    const headers = ['Child full name', 'Age', 'Child gender', 'Parent name', 'Phone', 'Email', 'Registered at']
     const rows = registrations.map(r => [
       r.child_full_name,
       r.age,
+      r.child_gender || '',
       r.parent_name,
       r.phone,
       r.email,
@@ -119,7 +121,7 @@ export default function AdminPage() {
             <table className="w-full text-sm">
               <thead className="text-white" style={{ backgroundColor: '#0033A0' }}>
                 <tr>
-                  {['Child', 'Age', 'Parent', 'Phone', 'Email', 'Registered'].map(h => (
+                  {['Child', 'Age', 'Child gender', 'Parent', 'Phone', 'Email', 'Registered'].map(h => (
                     <th key={h} className="text-left px-4 py-3 font-medium">{h}</th>
                   ))}
                 </tr>
@@ -129,6 +131,7 @@ export default function AdminPage() {
                   <tr key={r.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-4 py-3 font-medium text-gray-900">{r.child_full_name}</td>
                     <td className="px-4 py-3 text-gray-700">{r.age || '—'}</td>
+                    <td className="px-4 py-3 text-gray-700">{r.child_gender || '—'}</td>
                     <td className="px-4 py-3 text-gray-900">{r.parent_name}</td>
                     <td className="px-4 py-3 text-gray-700">{r.phone}</td>
                     <td className="px-4 py-3 text-gray-700">{r.email}</td>
