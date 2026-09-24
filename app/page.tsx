@@ -120,15 +120,6 @@ export default function RegistrationForm() {
   return (
     <PageShell>
       <div className="w-full max-w-lg">
-        {showNotice && (
-          <div
-            className="mb-4 rounded-xl px-4 py-3 text-sm text-white whitespace-pre-wrap"
-            style={{ backgroundColor: '#0033A0' }}
-            role="status"
-          >
-            {notice.text}
-          </div>
-        )}
         <div className="rounded-2xl shadow-xl overflow-hidden w-full bg-white">
           <div className="px-8 py-7 text-white text-center" style={{ backgroundColor: '#0033A0' }}>
             <Image
@@ -144,6 +135,16 @@ export default function RegistrationForm() {
             </h1>
             <p className="text-sm mt-1 font-semibold text-white">Have a Go Day — Registration</p>
           </div>
+
+          {showNotice && (
+            <div
+              className="mx-8 mt-6 rounded-xl px-4 py-3 text-sm text-gray-900 whitespace-pre-wrap border-2"
+              style={{ borderColor: '#0033A0', backgroundColor: '#e8eef9' }}
+              role="status"
+            >
+              {notice.text}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="p-8 space-y-5">
             <Field

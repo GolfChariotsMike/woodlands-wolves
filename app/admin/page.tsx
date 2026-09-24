@@ -370,27 +370,100 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen p-6" style={{ backgroundColor: '#f4f7fb' }}>
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6 gap-4">
+        <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold" style={{ color: '#0033A0' }}>
               Woodlands Wolves — Have a Go Day
             </h1>
             <p className="text-gray-600 text-sm mt-1">{registrations.length} registered</p>
           </div>
-          <button
-            type="button"
-            onClick={exportCSV}
-            className="text-white px-4 py-2 rounded-lg text-sm font-medium transition hover:opacity-90"
-            style={{ backgroundColor: '#0033A0' }}
-          >
-            Export CSV
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="#edit-form"
+              className="px-4 py-2 rounded-lg text-sm font-medium border-2"
+              style={{ borderColor: '#0033A0', color: '#0033A0' }}
+            >
+              Edit Form
+            </a>
+            <a
+              href="#edit-notice"
+              className="px-4 py-2 rounded-lg text-sm font-medium border-2"
+              style={{ borderColor: '#0033A0', color: '#0033A0' }}
+            >
+              Edit Notice
+            </a>
+            <button
+              type="button"
+              onClick={exportCSV}
+              className="text-white px-4 py-2 rounded-lg text-sm font-medium transition hover:opacity-90"
+              style={{ backgroundColor: '#0033A0' }}
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
 
         {loadError && <p className="mb-4 text-red-700 text-sm font-medium">{loadError}</p>}
 
-        <section className="bg-white rounded-xl shadow p-5 mb-6">
-          <h2 className="text-lg font-bold mb-3" style={{ color: '#0033A0' }}>Homepage notice</h2>
+        <section id="registrations" className="mb-10 scroll-mt-6">
+          <h2 className="text-lg font-bold mb-3" style={{ color: '#0033A0' }}>Registrations</h2>
+          {loading ? (
+            <p className="text-gray-600">Loading...</p>
+          ) : registrations.length === 0 ? (
+            <div className="bg-white rounded-xl p-8 text-center text-gray-500">No registrations yet.</div>
+          ) : (
+            <div className="bg-white rounded-xl shadow overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-white" style={{ backgroundColor: '#0033A0' }}>
+                  <tr>
+                    {['Child', 'Age', 'Child gender', 'Parent', 'Phone', 'Email', ...columns.map((column) => column.label), 'Registered', ''].map((header, index) => (
+                      <th key={`${header}-${index}`} className="text-left px-4 py-3 font-medium whitespace-nowrap">{header || 'Remove'}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {registrations.map((registration, index) => (
+                    <tr key={registration.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <td className="px-4 py-3 font-medium text-gray-900">{registration.child_full_name}</td>
+                      <td className="px-4 py-3 text-gray-700">{registration.age || '—'}</td>
+                      <td className="px-4 py-3 text-gray-700">{registration.child_gender || '—'}</td>
+                      <td className="px-4 py-3 text-gray-900">{registration.parent_name}</td>
+                      <td className="px-4 py-3 text-gray-700">{registration.phone}</td>
+                      <td className="px-4 py-3 text-gray-700">{registration.email}</td>
+                      {columns.map((column) => (
+                        <td key={column.key} className="px-4 py-3 text-gray-700">
+                          {formatAnswer(registration.custom_answers?.[column.key]) || '—'}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-gray-600 text-xs whitespace-nowrap">
+                        {new Date(registration.created_at).toLocaleString('en-AU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteError('')
+                            setConfirmState({ kind: 'registration', registration })
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-700 hover:opacity-90"
+                          aria-label={`Remove registration for ${registration.child_full_name}`}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        <section id="edit-notice" className="bg-white rounded-xl shadow p-5 mb-6 scroll-mt-6">
+          <h2 className="text-lg font-bold" style={{ color: '#0033A0' }}>Homepage Notice</h2>
+          <p className="text-sm text-gray-600 mt-1 mb-3">
+            Examples: dates of event, cancelled due to weather, bring a water bottle.
+          </p>
           <form onSubmit={saveNotice} className="space-y-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-800">
               <input
@@ -405,7 +478,7 @@ export default function AdminPage() {
               onChange={(e) => setNoticeText(e.target.value)}
               rows={3}
               maxLength={1000}
-              placeholder="Message shown above the registration form"
+              placeholder="e.g. Saturday 10am at the oval. Cancelled due to weather."
               className={inputClass}
               style={inputStyle}
               aria-label="Homepage notice"
@@ -425,7 +498,7 @@ export default function AdminPage() {
           </form>
         </section>
 
-        <section className="bg-white rounded-xl shadow p-5 mb-6">
+        <section id="edit-form" className="bg-white rounded-xl shadow p-5 mb-6 scroll-mt-6">
           <h2 className="text-lg font-bold mb-1" style={{ color: '#0033A0' }}>Custom questions</h2>
           <p className="text-sm text-gray-600 mb-4">
             Extra questions appear after the fixed registration fields. Name, age, gender, parent, phone, and email stay on the form.
@@ -632,57 +705,6 @@ export default function AdminPage() {
             </ul>
           )}
         </section>
-
-        {loading ? (
-          <p className="text-gray-600">Loading...</p>
-        ) : registrations.length === 0 ? (
-          <div className="bg-white rounded-xl p-8 text-center text-gray-500">No registrations yet.</div>
-        ) : (
-          <div className="bg-white rounded-xl shadow overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-white" style={{ backgroundColor: '#0033A0' }}>
-                <tr>
-                  {['Child', 'Age', 'Child gender', 'Parent', 'Phone', 'Email', ...columns.map((column) => column.label), 'Registered', ''].map((header, index) => (
-                    <th key={`${header}-${index}`} className="text-left px-4 py-3 font-medium whitespace-nowrap">{header || 'Remove'}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {registrations.map((registration, index) => (
-                  <tr key={registration.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-4 py-3 font-medium text-gray-900">{registration.child_full_name}</td>
-                    <td className="px-4 py-3 text-gray-700">{registration.age || '—'}</td>
-                    <td className="px-4 py-3 text-gray-700">{registration.child_gender || '—'}</td>
-                    <td className="px-4 py-3 text-gray-900">{registration.parent_name}</td>
-                    <td className="px-4 py-3 text-gray-700">{registration.phone}</td>
-                    <td className="px-4 py-3 text-gray-700">{registration.email}</td>
-                    {columns.map((column) => (
-                      <td key={column.key} className="px-4 py-3 text-gray-700">
-                        {formatAnswer(registration.custom_answers?.[column.key]) || '—'}
-                      </td>
-                    ))}
-                    <td className="px-4 py-3 text-gray-600 text-xs whitespace-nowrap">
-                      {new Date(registration.created_at).toLocaleString('en-AU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteError('')
-                          setConfirmState({ kind: 'registration', registration })
-                        }}
-                        className="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-700 hover:opacity-90"
-                        aria-label={`Remove registration for ${registration.child_full_name}`}
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
 
       {confirmState && (
